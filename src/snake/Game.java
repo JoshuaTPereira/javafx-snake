@@ -1,6 +1,7 @@
 package snake;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Game {
@@ -37,7 +38,7 @@ public class Game {
     }
 
     private Coordinate generateFood() {
-        ArrayList<Coordinate> openCoords = new ArrayList<Coordinate>();
+        List<Coordinate> openCoords = new ArrayList<Coordinate>(columnCount * rowCount);
         for (int i = 0; i < columnCount; i++) {
             for (int j = 0; j < rowCount; j++) {
                 openCoords.add(new Coordinate(i, j));
@@ -46,7 +47,7 @@ public class Game {
 
         for (int i = 0; i < snake.size(); i++) {
             Coordinate coordinate = snake.get(i);
-            openCoords.remove((columnCount * coordinate.x) + (rowCount * coordinate.y) - i);
+            openCoords.remove((columnCount * coordinate.x) + coordinate.y - i);
         }
 
         Random random = new Random();
