@@ -15,6 +15,11 @@ public class Main extends Application {
 	@Override
     public void start(Stage stage) {
         Game game = new Game();
+        game.print();
+        game.move(Direction.LEFT);
+        game.print();
+        game.move(Direction.LEFT);
+        game.print();
         game.move(Direction.LEFT);
         game.print();
         // System.out.print("\033[H\033[2J");  
