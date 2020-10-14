@@ -1,6 +1,7 @@
 package snake;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Game {
 
@@ -37,10 +38,19 @@ public class Game {
 
     private Coordinate generateFood() {
         ArrayList<Coordinate> openCoords = new ArrayList<Coordinate>();
-        for (Coordinate coordinate : snake) {
-            
+        for (int i = 0; i < columnCount; i++) {
+            for (int j = 0; j < rowCount; j++) {
+                openCoords.add(new Coordinate(i, j));
+            }
         }
-        return new Coordinate();
+
+        for (int i = 0; i < snake.size(); i++) {
+            Coordinate coordinate = snake.get(i);
+            openCoords.remove((columnCount * coordinate.x) + (rowCount * coordinate.y) - i);
+        }
+
+        Random random = new Random();
+        return openCoords.get(random.nextInt(openCoords.size()));
     }
 
     public void move(Direction direction) {
@@ -63,6 +73,29 @@ public class Game {
 
     public boolean hasLost() {
         return hasLost;
+    }
+
+    public void print() {
+        String[][] board = new String[columnCount][rowCount];
+
+        for (int i = 0; i < columnCount; i++) {
+            for (int j = 0; j < rowCount; j++) {
+                board[i][j] = "\u25A1 ";
+            }
+        }
+
+        board[food.x][food.y] = "# ";
+
+        for (Coordinate coordinate : snake) {
+            board[coordinate.x][coordinate.y] = "\u25A0 ";
+        }
+
+        for (int i = 0; i < columnCount; i++) {
+            for (int j = 0; j < rowCount; j++) {
+                System.out.print(board[i][j]);
+            }
+            System.out.print("\n");
+        }
     }
 
     public String toString() {

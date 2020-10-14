@@ -16,6 +16,9 @@ public class Main extends Application {
     public void start(Stage stage) {
         Game game = new Game();
         game.move(Direction.LEFT);
+        game.print();
+        // System.out.print("\033[H\033[2J");  
+        // System.out.flush();  
         String javaVersion = System.getProperty("java.version");
         String javafxVersion = System.getProperty("javafx.version");
         Label l = new Label("Hello, JavaFX " + javafxVersion + ", running on Java " + javaVersion + ".");
