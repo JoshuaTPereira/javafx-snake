@@ -52,8 +52,7 @@ public class Game {
         }
 
         for (int i = 0; i < snake.size(); i++) {
-            Coordinate coordinate = snake.get(i);
-            openCoords.remove((columnCount * coordinate.x) + coordinate.y - i);
+            openCoords.remove(snake.get(i));
         }
 
         Random random = new Random();
