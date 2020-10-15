@@ -83,7 +83,14 @@ public class Game {
             break;
         }
 
-        if (nextHead.x < 0 || nextHead.x >= columnCount || nextHead.y < 0 || nextHead.y >= rowCount) {
+        if (
+            nextHead.x < 0 || 
+            nextHead.x >= columnCount || 
+            nextHead.y < 0 || 
+            nextHead.y >= rowCount || 
+            (snake.contains(nextHead) && !snake.get(snake.size() - 1).equals(nextHead))
+            ) 
+        {
             hasLost = true;
         }
         else if (nextHead.equals(food)) {
