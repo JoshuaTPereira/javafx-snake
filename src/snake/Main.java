@@ -1,33 +1,47 @@
 package snake;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
-	public static void main(String[] args) {
-		launch();
-	}
-	
-	@Override
+    private Game game;
+    private Direction direction;
+    public static void main(String[] args) {
+        launch();
+    }
+
+    @Override
     public void start(Stage stage) {
-        Game game = new Game();
-        game.print();
-        game.move(Direction.LEFT);
-        game.print();
-        game.move(Direction.LEFT);
-        game.print();
-        game.move(Direction.LEFT);
-        game.print();
-        // System.out.print("\033[H\033[2J");  
-        // System.out.flush();  
-        String javaVersion = System.getProperty("java.version");
-        String javafxVersion = System.getProperty("javafx.version");
-        Label l = new Label("Hello, JavaFX " + javafxVersion + ", running on Java " + javaVersion + ".");
-        Scene scene = new Scene(new StackPane(l), 640, 480);
+        game = new Game();
+        direction = Direction.RIGHT;
+
+        Scene scene = new Scene(new StackPane(), 640, 480);
+
+        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                switch (event.getCode()) {
+                    case UP:    direction = Direction.UP;    break;
+                    case DOWN:  direction = Direction.DOWN;  break;
+                    case LEFT:  direction = Direction.LEFT;  break;
+                    case RIGHT: direction = Direction.RIGHT; break;
+                }
+            }
+        });
+
+        new AnimationTimer() {
+            public void handle(long currentNanoTime) { 
+                game.move(direction);
+                game.print();
+            }
+        }.start();
+        
         stage.setScene(scene);
         stage.show();
     }
