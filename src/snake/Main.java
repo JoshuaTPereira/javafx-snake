@@ -14,26 +14,35 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
+    private int columnCount, rowCount, columnSize, rowSize, width, height;
+    private long speedModifier;
+
     private Game game;
     private Direction currentDirection;
     private Direction nextDirection;
-    private long speedModifier;
 
     private GraphicsContext graphicsContext;
 
     public static void main(String[] args) {
-        launch();
+        launch(args);
     }
 
     @Override
     public void start(Stage stage) {
-        game = new Game();
-        game.print();
-        currentDirection = nextDirection = Direction.RIGHT;
+        Parameters args = getParameters();
+        columnCount = 21;
+        rowCount = 21;
+        columnSize = 20;
+        rowSize = 20;
+        width = 640;
+        height = 480;
         speedModifier = 50_000_000;
 
+        game = new Game();
+        currentDirection = nextDirection = Direction.RIGHT;
+
         Group root = new Group();
-        Canvas canvas = new Canvas(640, 480);
+        Canvas canvas = new Canvas(width, height);
         graphicsContext = canvas.getGraphicsContext2D();
         root.getChildren().add(canvas);
 
@@ -80,34 +89,56 @@ public class Main extends Application {
         if (!game.hasLost() && !game.hasWon()) {
             game.move(currentDirection);
             currentDirection = nextDirection;
-            game.print();
             drawGame();
         }
     }
 
     private void restartGame() {
         game = new Game();
-        game.print();
         currentDirection = nextDirection = Direction.RIGHT;
     }
 
     private void handleMovement(KeyCode keycode) {
-        if (keycode == KeyCode.UP && currentDirection != Direction.DOWN) {
+        boolean isStartSize = game.snake().size() == 1;
+
+        if (keycode == KeyCode.UP && (currentDirection != Direction.DOWN || isStartSize)) {
             nextDirection = Direction.UP;
         }
-        else if (keycode == KeyCode.DOWN && currentDirection != Direction.UP) {
+        else if (keycode == KeyCode.DOWN && (currentDirection != Direction.UP || isStartSize)) {
             nextDirection = Direction.DOWN;
         }
-        else if (keycode == KeyCode.LEFT && currentDirection != Direction.RIGHT) {
+        else if (keycode == KeyCode.LEFT && (currentDirection != Direction.RIGHT || isStartSize)) {
             nextDirection = Direction.LEFT;
         }
-        else if (keycode == KeyCode.RIGHT && currentDirection != Direction.LEFT) {
+        else if (keycode == KeyCode.RIGHT && (currentDirection != Direction.LEFT || isStartSize)) {
             nextDirection = Direction.RIGHT;
         }
     }
 
     private void drawGame() {
-        
+        graphicsContext.setFill(Color.WHITE);
+        graphicsContext.setStroke(Color.BLACK);
+        graphicsContext.setLineWidth(1);
+
+        int startingColumnPosition = (width - (columnCount * columnSize)) / 2;
+        int startingRowPosition = (height - (rowCount * rowSize)) / 2;
+
+        for (int i = 0; i < rowCount; i++) {
+            for (int j = 0; j < columnCount; j++) {
+                graphicsContext.fillRect(startingColumnPosition + columnSize * j, startingRowPosition + rowSize * i, columnSize, rowSize);
+                graphicsContext.strokeRect(startingColumnPosition + columnSize * j, startingRowPosition + rowSize * i, columnSize, rowSize);
+            }
+        }
+
+        graphicsContext.setFill(Color.GREEN);
+
+        for (Coordinate coordinate : game.snake()) {
+            graphicsContext.fillRect(startingColumnPosition + columnSize * coordinate.x, startingRowPosition + rowSize * coordinate.y, columnSize, rowSize);
+        }
+
+        graphicsContext.setFill(Color.RED);
+
+        graphicsContext.fillRect(startingColumnPosition + columnSize * game.food().x, startingRowPosition + rowSize * game.food().y, columnSize, rowSize);
     }
 
 }

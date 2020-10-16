@@ -13,7 +13,7 @@ public class Game {
     private final int columnCount;
     private final int rowCount;
     private final boolean modWall;
-    private ArrayList<Coordinate> snake;
+    private final ArrayList<Coordinate> snake;
     private Coordinate food; 
 
     public Game() {
@@ -132,6 +132,20 @@ public class Game {
             System.out.print("\n");
         }
         System.out.print("\n");
+    }
+
+    public List<Coordinate> snake() {
+        List<Coordinate> snakeCopy = new ArrayList<Coordinate>(snake.size());
+
+        for (int i = 0; i < snake.size(); i++) {
+            snakeCopy.add(snake.get(i));
+        }
+
+        return snakeCopy;
+    }
+
+    public Coordinate food() {
+        return food;
     }
 
     @Override
