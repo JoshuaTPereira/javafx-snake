@@ -15,6 +15,8 @@ public class Main extends Application {
     private Direction currentDirection;
     private Direction nextDirection;
 
+    private long speedModifier;
+
     public static void main(String[] args) {
         launch();
     }
@@ -24,6 +26,8 @@ public class Main extends Application {
         game = new Game();
         game.print();
         currentDirection = nextDirection = Direction.RIGHT;
+
+        speedModifier = 50_000_000;
 
         Scene scene = new Scene(new StackPane(), 640, 480);
 
@@ -42,17 +46,27 @@ public class Main extends Application {
         });
 
         new AnimationTimer() {
+            private long lastUpdate = 0;
+
+            @Override
             public void handle(long currentNanoTime) { 
-                if (!game.hasLost() && !game.hasWon()) {
-                    game.move(currentDirection);
-                    currentDirection = nextDirection;
-                    game.print();
+                if (currentNanoTime - lastUpdate >= speedModifier) {
+                    runGameLoop();
+                    lastUpdate = currentNanoTime;
                 }
             }
         }.start();
         
         stage.setScene(scene);
         stage.show();
+    }
+
+    private void runGameLoop() {
+        if (!game.hasLost() && !game.hasWon()) {
+            game.move(currentDirection);
+            currentDirection = nextDirection;
+            game.print();
+        }
     }
 
     private void restart() {
