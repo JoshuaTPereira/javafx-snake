@@ -3,10 +3,13 @@ package snake;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -14,8 +17,9 @@ public class Main extends Application {
     private Game game;
     private Direction currentDirection;
     private Direction nextDirection;
-
     private long speedModifier;
+
+    private GraphicsContext graphicsContext;
 
     public static void main(String[] args) {
         launch();
@@ -26,10 +30,16 @@ public class Main extends Application {
         game = new Game();
         game.print();
         currentDirection = nextDirection = Direction.RIGHT;
-
         speedModifier = 50_000_000;
 
-        Scene scene = new Scene(new StackPane(), 640, 480);
+        Group root = new Group();
+        Canvas canvas = new Canvas(640, 480);
+        graphicsContext = canvas.getGraphicsContext2D();
+        root.getChildren().add(canvas);
+
+        Scene scene = new Scene(root);
+        stage.setTitle("Snake");
+        stage.setScene(scene);
 
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
@@ -38,7 +48,12 @@ public class Main extends Application {
                 
                 switch (keycode) {
                     case SPACE:
-                    case ENTER: restart(); break;
+                    case ENTER: 
+                        restartGame(); 
+                    break;
+                    default: 
+                        // NO OP
+                    break;
                 }
 
                 handleMovement(keycode);
@@ -66,10 +81,11 @@ public class Main extends Application {
             game.move(currentDirection);
             currentDirection = nextDirection;
             game.print();
+            drawGame();
         }
     }
 
-    private void restart() {
+    private void restartGame() {
         game = new Game();
         game.print();
         currentDirection = nextDirection = Direction.RIGHT;
@@ -88,6 +104,10 @@ public class Main extends Application {
         else if (keycode == KeyCode.RIGHT && currentDirection != Direction.LEFT) {
             nextDirection = Direction.RIGHT;
         }
+    }
+
+    private void drawGame() {
+        
     }
 
 }
