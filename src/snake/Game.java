@@ -102,14 +102,6 @@ public class Game {
         }
     }
 
-    public boolean hasWon() {
-        return hasWon;
-    }
-
-    public boolean hasLost() {
-        return hasLost;
-    }
-
     public void print() {
         String[][] board = new String[columnCount][rowCount];
 
@@ -132,6 +124,14 @@ public class Game {
             System.out.print("\n");
         }
         System.out.print("\n");
+    }
+
+    public boolean hasWon() {
+        return hasWon;
+    }
+
+    public boolean hasLost() {
+        return hasLost;
     }
 
     public List<Coordinate> snake() {

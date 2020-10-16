@@ -1,5 +1,7 @@
 package snake;
 
+import java.util.List;
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -14,12 +16,15 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
+    // Command line arguments for game settings
     private int columnCount, rowCount, columnSize, rowSize, width, height;
+    private boolean modWall;
     private long speedModifier;
 
     private Game game;
     private Direction currentDirection;
     private Direction nextDirection;
+    private List<Coordinate> previousSnake; // Used to optimize the draw routine
 
     private GraphicsContext graphicsContext;
 
@@ -29,17 +34,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
-        Parameters args = getParameters();
-        columnCount = 21;
-        rowCount = 21;
-        columnSize = 20;
-        rowSize = 20;
-        width = 640;
-        height = 480;
-        speedModifier = 50_000_000;
-
-        game = new Game();
-        currentDirection = nextDirection = Direction.RIGHT;
+        parseArgs(getParameters());
 
         Group root = new Group();
         Canvas canvas = new Canvas(width, height);
@@ -50,6 +45,8 @@ public class Main extends Application {
         stage.setTitle("Snake");
         stage.setScene(scene);
 
+        startGame();
+
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
@@ -58,7 +55,7 @@ public class Main extends Application {
                 switch (keycode) {
                     case SPACE:
                     case ENTER: 
-                        restartGame(); 
+                        startGame(); // Restart
                     break;
                     default: 
                         // NO OP
@@ -85,17 +82,30 @@ public class Main extends Application {
         stage.show();
     }
 
+    private void parseArgs(Parameters args) {
+        columnCount = 130;
+        rowCount = 90;
+        columnSize = 10;
+        rowSize = 10;
+        width = 1920;
+        height = 1080;
+        modWall = true;
+        speedModifier = 0;
+    }
+
     private void runGameLoop() {
         if (!game.hasLost() && !game.hasWon()) {
+            previousSnake = game.snake();
             game.move(currentDirection);
             currentDirection = nextDirection;
             drawGame();
         }
     }
 
-    private void restartGame() {
-        game = new Game();
+    private void startGame() {
+        game = new Game(columnCount, rowCount, modWall);
         currentDirection = nextDirection = Direction.RIGHT;
+        drawInitialGameBoard();
     }
 
     private void handleMovement(KeyCode keycode) {
@@ -115,7 +125,7 @@ public class Main extends Application {
         }
     }
 
-    private void drawGame() {
+    private void drawInitialGameBoard() {
         graphicsContext.setFill(Color.WHITE);
         graphicsContext.setStroke(Color.BLACK);
         graphicsContext.setLineWidth(1);
@@ -128,6 +138,19 @@ public class Main extends Application {
                 graphicsContext.fillRect(startingColumnPosition + columnSize * j, startingRowPosition + rowSize * i, columnSize, rowSize);
                 graphicsContext.strokeRect(startingColumnPosition + columnSize * j, startingRowPosition + rowSize * i, columnSize, rowSize);
             }
+        }
+    }
+
+    private void drawGame() {
+        int startingColumnPosition = (width - (columnCount * columnSize)) / 2;
+        int startingRowPosition = (height - (rowCount * rowSize)) / 2;
+
+        graphicsContext.setFill(Color.WHITE);
+        graphicsContext.setStroke(Color.BLACK);
+
+        for (Coordinate coordinate : previousSnake) {
+            graphicsContext.fillRect(startingColumnPosition + columnSize * coordinate.x, startingRowPosition + rowSize * coordinate.y, columnSize, rowSize);
+            graphicsContext.strokeRect(startingColumnPosition + columnSize * coordinate.x, startingRowPosition + rowSize * coordinate.y, columnSize, rowSize);
         }
 
         graphicsContext.setFill(Color.GREEN);
